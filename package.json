@@ -1,0 +1,11 @@
+{
+  "name": "horseman",
+  "version": "1.0.0",
+  "description": "USB PLUGIN FOR HORSEMAN",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Manish Kumar Rai",
+  "license": "ISC"
+}
