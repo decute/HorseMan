@@ -326,6 +326,20 @@ public class HorseMan extends CordovaPlugin {
         }
     }
 
+    private int getInt(byte[] bytes, int idx) {
+        byte d0 = bytes[(idx*4) + 0];
+        byte d1 = bytes[(idx*4) + 1];
+        byte d2 = bytes[(idx*4) + 2];
+        byte d3 = bytes[(idx*4) + 3];
+        int value = ((d3 & 0xFF) << 24) | ((d2 & 0xFF) << 16) | ((d1 & 0xFF) << 8) | (d0 & 0xFF);
+        return value;
+    }
+
+    private float getFloat(byte[] bytes, int idx) {
+        float f = Float.intBitsToFloat(getInt(bytes, idx) & 0xFFFFFFFF);
+        return f;
+    }
+
 
     public void getContiniousAscan(final CallbackContext callbackContext) {
         final HorseMan that = this;
@@ -342,16 +356,21 @@ public class HorseMan extends CordovaPlugin {
                             if (connection != null) {
                                 mAscanData = new JSONArray();
                                 mAscanData_size = -1;
-                                int dataSize = endPointBulkAscanRead.getMaxPacketSize();
+                                int dataSize = endPointAscanRead.getMaxPacketSize();
                                 byte[] data = new byte[dataSize];
                                 int rval = connection.controlTransfer(0xC1, 0xFD, 0x00, 0x00, null, 0, lTIMEOUT);
                                 rval = connection.bulkTransfer(endPointBulkAscanRead, data, dataSize, lTIMEOUT);
-                                int ascanSize = (data[3] << 24) | (data[2] << 16) | (data[1] << 8) | data[0];
-                                ascanSize *= 4;
-                                int cur_ascanSize = dataSize - 4;
+                                int ascanSize = getInt(data, 0);
+                                int g1_len = getInt(data, 1)/4; 
+                                int g2_len = getInt(data, 1+(1+g1_len))/4;
+                                int ascan_pairs = getInt(data, 1+(1+g1_len)+(1+g2_len));
                                 bytesToJSON(data);
-                                mAscanData.remove(0);
-                                mAscanData_size--;
+                                int to_remove = 1+(1+g1_len)+(1+g2_len)+1;
+                                for(int i=0; i<to_remove; i++) {
+                                    mAscanData.remove(0);
+                                    mAscanData_size--;
+                                }
+                                int cur_ascanSize = dataSize;
                                 while (cur_ascanSize < ascanSize) {
                                     rval = connection.controlTransfer(0xC1, 0xFE, 0x00, 0x00, null, 0, lTIMEOUT);
                                     assert(rval >= 0);
