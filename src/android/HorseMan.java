@@ -356,7 +356,7 @@ public class HorseMan extends CordovaPlugin {
                             if (connection != null) {
                                 mAscanData = new JSONArray();
                                 mAscanData_size = -1;
-                                int dataSize = endPointAscanRead.getMaxPacketSize();
+                                int dataSize = endPointBulkAscanRead.getMaxPacketSize();
                                 byte[] data = new byte[dataSize];
                                 int rval = connection.controlTransfer(0xC1, 0xFD, 0x00, 0x00, null, 0, lTIMEOUT);
                                 rval = connection.bulkTransfer(endPointBulkAscanRead, data, dataSize, lTIMEOUT);
