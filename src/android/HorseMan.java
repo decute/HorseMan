@@ -364,8 +364,6 @@ public class HorseMan extends CordovaPlugin {
             mResponseData.put(mGateThicknessData);
             mResponseData.put(name);
 
-            printResult(""+mResponseData);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
