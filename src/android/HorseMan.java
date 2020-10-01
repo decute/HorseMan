@@ -380,7 +380,6 @@ public class HorseMan extends CordovaPlugin {
                     that.timer = new Timer(LOG_TAG, true);
                     TimerTask timerTask = new TimerTask() {
                         public void run() {
-
                             getPermission(deviceFound);
                             if (connection != null) {
                                 mAscanData = new JSONArray();
@@ -390,12 +389,15 @@ public class HorseMan extends CordovaPlugin {
                                 int rval = connection.controlTransfer(0xC1, 0xFD, 0x00, 0x00, null, 0, lTIMEOUT);
                                 rval = connection.bulkTransfer(endPointBulkAscanRead, data, dataSize, lTIMEOUT);
                                 int ascanSize = getInt(data, 0);
-                                mG1_len = getInt(data, 1)/4;
-                                mG1_thickness = getFloat(data, 5);
-                                mG1_thicknessMin = getFloat(data, 6);
-                                mG1_thicknessMax = getFloat(data, 7);
-                                mG2_len = getInt(data, 1+(1+mG1_len))/4;
-                                int ascan_pairs = getInt(data, 1+(1+mG2_len)+(1+mG2_len));
+                                int g1_idx = 1;
+                                mG1_len = getInt(data, g1_idx)/4;
+                                int g2_idx = g1_idx + 1 + mG1_len;
+                                float velocity = (float) 0.2272;
+                                mG1_thicknessMin = getFloat(data, g1_idx+4)*velocity*((float) 0.5);
+                                mG1_thicknessMax = getFloat(data, g2_idx+4)*velocity*((float) 0.5);
+                                mG1_thickness = mG1_thicknessMax - mG1_thicknessMin;
+                                mG2_len = getInt(data, g2_idx)/4;
+                                int ascan_pairs = getInt(data, 1+(1+mG2_len)+(1+mG2_len));                    
                                 bytesToJSON(data);
                                 int to_remove = 1+(1+mG1_len)+(1+mG2_len)+1;
                                 for(int i=0; i<to_remove; i++) {
