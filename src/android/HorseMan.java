@@ -59,6 +59,16 @@ public class HorseMan extends CordovaPlugin {
     private JSONArray mAscanData = null;
     private int mAscanData_size = 0;
 
+    private int mG1_len = 0;
+    private int mG2_len = 0;
+
+    private float mG1_thicknessMin = 0;
+    private float mG1_thicknessMax = 0;
+    private float mG1_thickness = 0;
+
+    private JSONObject mGateThicknessData =  null;
+    private JSONArray mResponseData = null;
+
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
@@ -340,6 +350,27 @@ public class HorseMan extends CordovaPlugin {
         return f;
     }
 
+    private void createFinalResponse(JSONArray mAscanData) {
+        mResponseData = new JSONArray();
+        mGateThicknessData = new JSONObject();
+        try {
+            mGateThicknessData.put("Gate1", mG1_thicknessMin);
+            mGateThicknessData.put("Gate2", mG1_thicknessMax);
+            mGateThicknessData.put("GateDifference", mG1_thickness);
+
+            JSONObject name =  new JSONObject();
+            name.put("GraphData", mAscanData);
+
+            mResponseData.put(mGateThicknessData);
+            mResponseData.put(name);
+
+            printResult(""+mResponseData);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public void getContiniousAscan(final CallbackContext callbackContext) {
         final HorseMan that = this;
@@ -361,11 +392,14 @@ public class HorseMan extends CordovaPlugin {
                                 int rval = connection.controlTransfer(0xC1, 0xFD, 0x00, 0x00, null, 0, lTIMEOUT);
                                 rval = connection.bulkTransfer(endPointBulkAscanRead, data, dataSize, lTIMEOUT);
                                 int ascanSize = getInt(data, 0);
-                                int g1_len = getInt(data, 1)/4; 
-                                int g2_len = getInt(data, 1+(1+g1_len))/4;
-                                int ascan_pairs = getInt(data, 1+(1+g1_len)+(1+g2_len));
+                                mG1_len = getInt(data, 1)/4;
+                                mG1_thickness = getFloat(data, 5);
+                                mG1_thicknessMin = getFloat(data, 6);
+                                mG1_thicknessMax = getFloat(data, 7);
+                                mG2_len = getInt(data, 1+(1+mG1_len))/4;
+                                int ascan_pairs = getInt(data, 1+(1+mG2_len)+(1+mG2_len));
                                 bytesToJSON(data);
-                                int to_remove = 1+(1+g1_len)+(1+g2_len)+1;
+                                int to_remove = 1+(1+mG1_len)+(1+mG2_len)+1;
                                 for(int i=0; i<to_remove; i++) {
                                     mAscanData.remove(0);
                                     mAscanData_size--;
@@ -387,7 +421,8 @@ public class HorseMan extends CordovaPlugin {
                                     }
                                     cur_ascanSize += dataSize;
                                 }
-                                PluginResult result = new PluginResult(PluginResult.Status.OK, mAscanData);
+                                createFinalResponse(mAscanData);
+                                PluginResult result = new PluginResult(PluginResult.Status.OK, mResponseData);
                                 result.setKeepCallback(true);
                                 callbackContext.sendPluginResult(result);
                             } else {
