@@ -47,7 +47,7 @@ public class HorseMan extends CordovaPlugin {
 
     private int targetVendorID = 1972;
     private int targetProductID = 144;
-    int lTIMEOUT = 5000;
+    int lTIMEOUT = 100;
 
     // Bluetooth state notification
     CallbackContext stateCallback;
@@ -226,7 +226,6 @@ public class HorseMan extends CordovaPlugin {
                         8
                     };
                     connection.controlTransfer(33, 32, 0, 0, buffer, buffer.length, lTIMEOUT);
-                    connection.controlTransfer(33, 34, 1, 0, null, 0, lTIMEOUT);
                     connection.controlTransfer(33, 34, 3, 0, null, 0, lTIMEOUT);
                     callbackContext.success("Connection Established Successfully");
                 } catch (Exception e) {
@@ -455,10 +454,9 @@ public class HorseMan extends CordovaPlugin {
         int i = 0;
         while (i < bytes.length) {
             //int minVal = (bytes[i + 0] & 0xFF) + ((bytes[i + 1] & 0xFF) << 8);
-            //int maxVal = getUnsignedInt(bytes[i + 2]);
-            //maxVal += getUnsignedInt(bytes[i + 3]) << 8;
-            
-            int maxVal = (bytes[i + 2] & 0xFF) + ((bytes[i + 3] & 0xFF) << 8);
+            //int maxVal = (bytes[i + 2] & 0xFF) + ((bytes[i + 3] & 0xFF) << 8);
+            int maxVal = getUnsignedInt(bytes[i + 2]);
+            maxVal += getUnsignedInt(bytes[i + 3]) << 8;
             
             try {
                 jsonObj = new JSONObject();
