@@ -309,7 +309,7 @@ public class HorseMan extends CordovaPlugin {
 
                 bytesToJSON(data);
                 mAscanData.remove(0);
-                mAscanData_size--;
+                //mAscanData_size--;
 
                 while (cur_ascanSize < ascanSize) {
                     rval = connection.controlTransfer(0xC1, 0xFE, 0x00, 0x00, null, 0, lTIMEOUT);
@@ -322,7 +322,7 @@ public class HorseMan extends CordovaPlugin {
                         dataSize -= overFlow;
                         for (int k = 0; k < (overFlow / 4); k++) {
                             mAscanData.remove(mAscanData.length() - 1);
-                            mAscanData_size--;
+                            //mAscanData_size--;
                         }
                     }
 
@@ -383,7 +383,6 @@ public class HorseMan extends CordovaPlugin {
                             getPermission(deviceFound);
                             if (connection != null) {
                                 mAscanData = new JSONArray();
-                                mAscanData_size = -1;
                                 int dataSize = endPointBulkAscanRead.getMaxPacketSize();
                                 byte[] data = new byte[dataSize];
                                 int rval = connection.controlTransfer(0xC1, 0xFD, 0x00, 0x00, null, 0, lTIMEOUT);
@@ -397,12 +396,12 @@ public class HorseMan extends CordovaPlugin {
                                 mG1_thicknessMax = getFloat(data, g2_idx+4)*velocity*((float) 0.5);
                                 mG1_thickness = mG1_thicknessMax - mG1_thicknessMin;
                                 mG2_len = getInt(data, g2_idx)/4;
-                                int ascan_pairs = getInt(data, 1+(1+mG2_len)+(1+mG2_len));                    
-                                bytesToJSON(data);
+                                int ascan_pairs = getInt(data, 1+(1+mG2_len)+(1+mG2_len));
                                 int to_remove = 1+(1+mG1_len)+(1+mG2_len)+1;
+                                mAscanData_size = -to_remove;
+                                bytesToJSON(data);
                                 for(int i=0; i<to_remove; i++) {
                                     mAscanData.remove(0);
-                                    mAscanData_size--;
                                 }
                                 int cur_ascanSize = dataSize;
                                 while (cur_ascanSize < ascanSize) {
@@ -416,7 +415,6 @@ public class HorseMan extends CordovaPlugin {
                                         dataSize -= overFlow;
                                         for (int k = 0; k < (overFlow / 4); k++) {
                                             mAscanData.remove(mAscanData.length() - 1);
-                                            mAscanData_size--;
                                         }
                                     }
                                     cur_ascanSize += dataSize;
