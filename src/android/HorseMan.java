@@ -453,10 +453,12 @@ public class HorseMan extends CordovaPlugin {
         JSONObject jsonObj = null;
         int i = 0;
         while (i < bytes.length) {
-            int minVal = (bytes[i + 0] & 0xFF) + ((bytes[i + 1] & 0xFF) << 8);
+            //int minVal = (bytes[i + 0] & 0xFF) + ((bytes[i + 1] & 0xFF) << 8);
             int maxVal = getUnsignedInt(bytes[i + 2]);
             maxVal += getUnsignedInt(bytes[i + 3]) << 8;
-
+            
+            maxVal = (bytes[i + 2] & 0xFF) + ((bytes[i + 3] & 0xFF) << 8);
+            
             try {
                 jsonObj = new JSONObject();
                 jsonObj.put("x", mAscanData_size);
