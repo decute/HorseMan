@@ -445,12 +445,17 @@ public class HorseMan extends CordovaPlugin {
         }
     }
 
+    public int getUnsignedInt(byte signed) {
+        return (signed >= 0) ? signed : (2 * Byte.MAX_VALUE + 2 + signed);
+    }
+
     private void bytesToJSON(byte[] bytes) {
         JSONObject jsonObj = null;
         int i = 0;
         while (i < bytes.length) {
             int minVal = (bytes[i + 0] & 0xFF) + ((bytes[i + 1] & 0xFF) << 8);
-            int maxVal = (bytes[i + 2] & 0xFF) + ((bytes[i + 3] & 0xFF) << 8);
+            int maxVal = getUnsignedInt(bytes[i + 2]);
+            maxVal += getUnsignedInt(bytes[i + 3]) << 8;
 
             try {
                 jsonObj = new JSONObject();
