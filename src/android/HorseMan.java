@@ -393,8 +393,10 @@ public class HorseMan extends CordovaPlugin {
                                 int g2_idx = g1_idx + 1 + mG1_len;
                                 float velocity = (float) 0.2320;
                                 mG1_thicknessMin = getFloat(data, g1_idx+4)*velocity*((float) 0.5);
-                                mG1_thicknessMax = getFloat(data, g2_idx+4)*velocity*((float) 0.5);
-                                mG1_thickness = mG1_thicknessMax - mG1_thicknessMin;
+                                //mG1_thicknessMax = getFloat(data, g2_idx+4)*velocity*((float) 0.5);
+                                //mG1_thickness = mG1_thicknessMax - mG1_thicknessMin;
+                                mG1_thicknessMax = 0.0;
+                                mG1_thickness = mG1_thicknessMin;
                                 mG2_len = getInt(data, g2_idx)/4;
                                 int ascan_pairs = getInt(data, 1+(1+mG2_len)+(1+mG2_len));
                                 int to_remove = 1+(1+mG1_len)+(1+mG2_len)+1;
