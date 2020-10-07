@@ -391,7 +391,7 @@ public class HorseMan extends CordovaPlugin {
                                 int g1_idx = 1;
                                 mG1_len = getInt(data, g1_idx)/4;
                                 int g2_idx = g1_idx + 1 + mG1_len;
-                                float velocity = (float) 0.2272;
+                                float velocity = (float) 0.2320;
                                 mG1_thicknessMin = getFloat(data, g1_idx+4)*velocity*((float) 0.5);
                                 mG1_thicknessMax = getFloat(data, g2_idx+4)*velocity*((float) 0.5);
                                 mG1_thickness = mG1_thicknessMax - mG1_thicknessMin;
