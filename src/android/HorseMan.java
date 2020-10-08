@@ -440,9 +440,11 @@ public class HorseMan extends CordovaPlugin {
 
 
     private void getPermission(UsbDevice device) {
-        if (!mUsbManager.hasPermission(device)) {
-            mUsbManager.requestPermission(device, PendingIntent.getActivity(cordova.getActivity(), 0, new Intent("android.permission.MANAGE_USB"), 0));
-        }
+       try {
+            if (!mUsbManager.hasPermission(device)){
+               mUsbManager.requestPermission(device, PendingIntent.getActivity(cordova.getActivity(), 0, new Intent("android.permission.MANAGE_USB"), 0));
+            }
+         } catch (Exception e) {}    
     }
 
     public int getUnsignedInt(byte signed) {
