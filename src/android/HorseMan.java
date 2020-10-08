@@ -261,6 +261,15 @@ public class HorseMan extends CordovaPlugin {
             getPermission(deviceFound);
             if (connection != null) {
                 try {
+                    int dataLen = endpointSerialRead.getMaxPacketSize();
+                    byte[] data = new byte[dataLen];
+                    int rval=0;
+
+                    //pull out stale data from the serial
+                    while (rval>=0) {
+                        rval = connection.bulkTransfer(endpointSerialRead, data, dataLen, lTIMEOUT);
+                    }
+                    
                     String command = "VER?\r\n";
                     if (args != null) {
                         command = args.getJSONObject(0).getString("command");
@@ -270,8 +279,6 @@ public class HorseMan extends CordovaPlugin {
                     }
                     byte[] buf = command.getBytes();
                     connection.bulkTransfer(endpointSerialWrite, buf, buf.length, lTIMEOUT);
-                    int dataLen = endpointSerialRead.getMaxPacketSize();
-                    byte[] data = new byte[dataLen];
                     int r = connection.bulkTransfer(endpointSerialRead, data, dataLen, lTIMEOUT);
                     if (r >= 0) {
                         //callbackContext.success("Buffer" + Arrays.toString(buf) + "Data_Length : " + dataLen + "Response :" + new String(data, StandardCharsets.UTF_8));
